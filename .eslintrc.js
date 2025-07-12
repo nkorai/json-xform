@@ -6,9 +6,7 @@ module.exports = {
     commonjs: true,
     es6: true
   },
-  extends: [
-    'standard'
-  ],
+  extends: ['standard'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly'
@@ -16,14 +14,16 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2020
   },
-  rules: {
-  },
-  overrides: [{
-    files: ['*.test.js'],
-    rules: {
-      'no-template-curly-in-string': 'off',
-      'no-unused-expressions': 'off',
-      'n/no-path-concat': 'off'
+  rules: {},
+  overrides: [
+    {
+      files: ['*.test.js'],
+      rules: {
+        'no-template-curly-in-string': 'off',
+        'no-unused-expressions': 'off',
+        'n/no-path-concat': 'off',
+        'no-implicit-any': 'off'
+      }
     }
-  }]
+  ]
 }

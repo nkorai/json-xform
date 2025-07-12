@@ -4,7 +4,7 @@ const dFormat = require('date-fns/format')
 const parse = require('date-fns/parse')
 const { executeTransformationCommands } = require('./transformUtils')
 
-const createFormatter = (type) => {
+export const createFormatter = (type) => {
   switch (type) {
     case 'date':
       return dateFormatter
@@ -15,13 +15,13 @@ const createFormatter = (type) => {
   }
 }
 
-const dateFormatter = (value, { format, sourceFormat }) => {
+export const dateFormatter = (value, { format, sourceFormat }) => {
   try {
     const date = parse(value, sourceFormat, new Date())
     return dFormat(date, format)
   } catch (ex) {
     throw Error(
-      `${ex.message} error occured when trying to format ${value} with ${format}`
+      `${(ex as Error).message} error occured when trying to format ${value} with ${format}`
     )
   }
 }
@@ -30,7 +30,7 @@ const commandsFormatter = (value, { transform }) => {
   return executeTransformationCommands(value, transform)
 }
 
-const formatPropValueIfNecessary = (propValue, via) => {
+export const formatPropValueIfNecessary = (propValue, via) => {
   if (!via) {
     return propValue
   }
@@ -38,5 +38,3 @@ const formatPropValueIfNecessary = (propValue, via) => {
   const formatter = createFormatter(via.type)
   return formatter(propValue, via)
 }
-
-module.exports = { formatPropValueIfNecessary, createFormatter, dateFormatter }

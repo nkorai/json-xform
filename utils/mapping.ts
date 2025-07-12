@@ -18,7 +18,7 @@ const commands = {
   FROMEACH: 'fromEach'
 }
 
-const mapArrayWithTemplate = async (
+export const mapArrayWithTemplate = async (
   sourceFile,
   xFormTemplateFile,
   continueOnError = false
@@ -27,7 +27,7 @@ const mapArrayWithTemplate = async (
   return await mapToNewObjects(source, xFormTemplate, continueOnError)
 }
 
-const mapWithTemplateAsync = async (sourceFile, xFormTemplateFile) => {
+export const mapWithTemplateAsync = async (sourceFile, xFormTemplateFile) => {
   return new Promise((resolve, reject) => {
     try {
       const result = mapWithTemplate(sourceFile, xFormTemplateFile)
@@ -38,7 +38,7 @@ const mapWithTemplateAsync = async (sourceFile, xFormTemplateFile) => {
   })
 }
 
-const mapToNewObjects = async (
+export const mapToNewObjects = async (
   sourceData,
   xFormTemplate,
   continueOnError = false
@@ -50,7 +50,7 @@ const mapToNewObjects = async (
   )
 }
 
-const mapToNewObjectAsync = async (
+export const mapToNewObjectAsync = async (
   source,
   xFormTemplate,
   continueOnError = false
@@ -61,7 +61,7 @@ const mapToNewObjectAsync = async (
       resolve(result)
     } catch (error) {
       if (continueOnError) {
-        resolve({ error: error.message })
+        resolve({ error: (error as Error).message })
       } else {
         reject(new Error(`An error occured during transformation ${error}`))
       }
@@ -69,17 +69,17 @@ const mapToNewObjectAsync = async (
   })
 }
 
-const xFormStream = (template) => {
+export const xFormStream = (template) => {
   return new Transform({
     objectMode: true,
-    transform (chunk, _, callback) {
+    transform(chunk, _, callback) {
       const result = mapToNewObject(JSON.parse(chunk.toString()), template)
       callback(null, JSON.stringify(result, null, 4))
     }
   })
 }
 
-const streamBatchProcess = (inputDir, outputDir, xFormTemplate) => {
+export const streamBatchProcess = (inputDir, outputDir, xFormTemplate) => {
   const filesToTransform = fs.readdirSync(inputDir)
   async.forEachOf(filesToTransform, (value, _1, _2) => {
     const newFilename = `${_.trimEnd(value, '.json')}.transformed.json`
@@ -96,13 +96,13 @@ const readFromFiles = (sourceFile, xFormTemplateFile) => {
   }
 }
 
-const mapWithTemplate = (sourceFile, xFormTemplateFile) => {
+export const mapWithTemplate = (sourceFile, xFormTemplateFile) => {
   const { source, xFormTemplate } = readFromFiles(sourceFile, xFormTemplateFile)
 
   return mapToNewObject(source, xFormTemplate)
 }
 
-const mapToNewObject = (source, xFormTemplate) => {
+export const mapToNewObject = (source, xFormTemplate) => {
   const _source = Object.create(null)
   const _xFormTemplate = Object.create(null)
   Object.assign(_source, source)
@@ -116,16 +116,18 @@ const mapToNewObject = (source, xFormTemplate) => {
 
 const flattenEverything = (everything) => {
   let copyEverything = Object.assign({}, everything)
-  for (const [key, val] of Object.entries(everything)) {
+  for (const [key, val1] of Object.entries(everything)) {
+    const val = val1 as any;
     if (val.constructor === Array && val.length === 1) {
       const explodedArray = Object.assign({}, ...val)
       copyEverything = { ...copyEverything, ...explodedArray }
       delete copyEverything[key]
     } else if (val.constructor === Array && val.length > 1) {
-      const allKeys = Object.keys(...val)
+      const allKeys = val.flatMap((obj: Record<string, unknown>) => Object.keys(obj));
+
       if (allKeys.length === 1) {
         const onlyKey = allKeys[0]
-        const pureValues = []
+        const pureValues: Array<any> = []
         Object.values(val).forEach((value) => {
           if (value[onlyKey]) {
             pureValues.push(value[onlyKey])
@@ -194,7 +196,7 @@ const traverseFieldsets = (sources, parentTemplate, flatten) => {
     if (!flatten) {
       const fieldsetResult = traverseFieldset(item, parentTemplate, {})
       if (!_.isEmpty(fieldsetResult)) {
-        fieldsetTarget.push(fieldsetResult)
+        (fieldsetTarget as any).push(fieldsetResult)
       }
     } else {
       fieldsetTarget = traverseFieldset(item, parentTemplate, fieldsetTarget)
@@ -263,15 +265,4 @@ const traverseFieldset = (source, fieldsetTemplate, target) => {
 
 const traverseTemplate = (source, xFormTemplate) => {
   return traverseFieldset(source, xFormTemplate[commands.FIELDSET], {})
-}
-
-module.exports = {
-  mapToNewObject,
-  mapWithTemplate,
-  mapWithTemplateAsync,
-  mapToNewObjectAsync,
-  mapToNewObjects,
-  mapArrayWithTemplate,
-  streamBatchProcess,
-  xFormStream
 }

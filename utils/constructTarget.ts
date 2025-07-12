@@ -2,7 +2,7 @@
 
 const { formatPropValueIfNecessary } = require('./formattingUtils')
 
-const addPropToTarget = (
+export const addPropToTarget = (
   target,
   property,
   propertyValue,
@@ -45,5 +45,3 @@ const addPropRecursive = (
   )
   return target
 }
-
-module.exports = { addPropToTarget }

@@ -2,7 +2,7 @@
 
 const _ = require('lodash')
 
-const executeTransformationCommands = (value, transform) => {
+export const executeTransformationCommands = (value, transform) => {
   validateTransformationRules(transform)
 
   return invokeRulesRecursively(value, transform)
