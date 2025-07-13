@@ -1,7 +1,6 @@
-const { expect } = require('chai')
-const { describe, it } = require('mocha')
+import { expect } from 'chai';
 
-const { mapToNewObject } = require('../utils/mapping')
+import { mapToNewObject } from '../utils/mapping';
 
 describe('Mapping to a new field which holds an array', () => {
   it('should place a single value from the source object into the target array', () => {
@@ -13,16 +12,16 @@ describe('Mapping to a new field which holds an array', () => {
           toArray: true
         }
       ]
-    }
+    };
     const source = {
       field: 'value'
-    }
+    };
     const target = {
       array: ['value']
-    }
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    };
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should place a single value from a chained property into an array in the target', () => {
     const xFormTemplate = {
@@ -33,20 +32,20 @@ describe('Mapping to a new field which holds an array', () => {
           toArray: true
         }
       ]
-    }
+    };
     const source = {
       field: {
         level: {
           one: 'value'
         }
       }
-    }
+    };
     const target = {
       array: ['value']
-    }
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    };
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should place a single value from a property into an array within a nested structure', () => {
     const xFormTemplate = {
@@ -57,18 +56,18 @@ describe('Mapping to a new field which holds an array', () => {
           toArray: true
         }
       ]
-    }
+    };
     const source = {
       field: 'value'
-    }
+    };
     const target = {
       root: {
         level: {
           one: ['value']
         }
       }
-    }
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
-})
+    };
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
+});

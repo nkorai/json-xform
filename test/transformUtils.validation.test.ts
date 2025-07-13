@@ -1,17 +1,16 @@
-const { expect } = require('chai')
-const { describe, it } = require('mocha')
+import { expect } from 'chai';
 
-const rewire = require('rewire')
-const transformUtils = rewire('../utils/transformUtils.js')
+import rewire from 'rewire';
+const transformUtils = rewire('../utils/transformUtils');
 
-const validate = transformUtils.__get__('validateTransformationRules')
+const validate = transformUtils.__get__('validateTransformationRules');
 
 describe('Validations work as expected', () => {
   const validationErrorPrototypeDetected =
-    'Usage __proto__, prototype is not supported'
+    'Usage __proto__, prototype is not supported';
 
   const validationErrorFunctionDetected =
-    'Functions are not supported in transformation rules'
+    'Functions are not supported in transformation rules';
 
   it('should successfully validate a transformation ruleset', () => {
     const transform = [
@@ -25,24 +24,24 @@ describe('Validations work as expected', () => {
       {
         command: 'trim'
       }
-    ]
+    ];
 
-    expect(validate(transform)).to.not.throw
-  })
+    expect(validate(transform)).to.not.throw;
+  });
 
   it('should recognize __proto__ in the command property and fail validation', () => {
     const transform = [
       {
         command: '__proto__'
       }
-    ]
-    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected)
-  })
+    ];
+    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected);
+  });
 
   it('should recognize prototype in the command property and fail validation', () => {
-    const transform = [{ command: 'prototype' }]
-    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected)
-  })
+    const transform = [{ command: 'prototype' }];
+    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected);
+  });
 
   it('should recognize __proto__ in the parameters property and fail validation', () => {
     let transform = [
@@ -50,25 +49,25 @@ describe('Validations work as expected', () => {
         command: 'set',
         params: ['__proto__', 1, 2, 3]
       }
-    ]
-    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected)
+    ];
+    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected);
 
     transform = [
       {
         command: 'set',
         params: [1, '__proto__', 2, 3]
       }
-    ]
-    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected)
+    ];
+    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected);
 
     transform = [
       {
         command: 'set',
         params: [1, 2, 3, '__proto__']
       }
-    ]
-    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected)
-  })
+    ];
+    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected);
+  });
 
   it('should recognize invalid commands or props across several transformation rules in the set', () => {
     let transform = [
@@ -82,8 +81,8 @@ describe('Validations work as expected', () => {
         command: 'splice',
         params: ['2', '1', '__proto__']
       }
-    ]
-    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected)
+    ];
+    expect(() => validate(transform)).to.throw(validationErrorPrototypeDetected);
 
     transform = [
       {
@@ -99,16 +98,16 @@ describe('Validations work as expected', () => {
       {
         command: 'set',
         params: [
-          () => {
-            return 'malice >:)'
-          }
+          (() => {
+            return 'malice >:)';
+          }) as any
         ]
       },
       {
         command: 'substring',
         params: ['1', '2']
       }
-    ]
-    expect(() => validate(transform)).to.throw(validationErrorFunctionDetected)
-  })
-})
+    ];
+    expect(() => validate(transform)).to.throw(validationErrorFunctionDetected);
+  });
+});

@@ -1,7 +1,6 @@
-const { expect } = require('chai')
-const { describe, it } = require('mocha')
+import { expect } from 'chai';
 
-const { mapToNewObject } = require('../utils/mapping')
+import { mapToNewObject } from '../utils/mapping';
 
 describe('Mapping based on a value', () => {
   it('should use the specified value from the source object as a prop key in the target', () => {
@@ -13,20 +12,20 @@ describe('Mapping based on a value', () => {
           withValueFrom: 'age'
         }
       ]
-    }
+    };
 
     const source = {
       name: 'Constantine',
       age: 41
-    }
+    };
 
     const target = {
       Constantine: 41
-    }
+    };
 
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should use the specified values from the source array as a prop key in the target', () => {
     const xFormTemplate = {
@@ -44,7 +43,7 @@ describe('Mapping based on a value', () => {
           }
         }
       ]
-    }
+    };
 
     const source = {
       content: [
@@ -57,15 +56,15 @@ describe('Mapping based on a value', () => {
           value: 'onehundred'
         }
       ]
-    }
+    };
 
     const target = {
       content: [{ text: 'MyText' }, { number: 'onehundred' }]
-    }
+    };
 
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should support nesting', () => {
     const xFormTemplate = {
@@ -76,7 +75,7 @@ describe('Mapping based on a value', () => {
           withValueFrom: 'value.deeper.abitdeeper.righthere'
         }
       ]
-    }
+    };
 
     const source = {
       key: 'a_key_to_a_nested_value',
@@ -87,15 +86,15 @@ describe('Mapping based on a value', () => {
           }
         }
       }
-    }
+    };
 
     const target = {
       a_key_to_a_nested_value: 'a_nested_value_to_a_key'
-    }
+    };
 
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should work with data Formatting', () => {
     const xFormTemplate = {
@@ -111,18 +110,18 @@ describe('Mapping based on a value', () => {
           }
         }
       ]
-    }
+    };
 
     const source = {
       key: 'When',
       value: '1981-10-03'
-    }
+    };
 
     const target = {
       When: '10/03/1981'
-    }
+    };
 
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
-})
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
+});

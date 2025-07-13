@@ -1,16 +1,16 @@
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const { describe, it } = require('mocha')
-const { mapToNewObjects, mapArrayWithTemplate } = require('../utils/mapping')
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 
-chai.use(chaiAsPromised)
-chai.should()
+import { mapToNewObjects, mapArrayWithTemplate } from '../utils/mapping';
+
+chai.use(chaiAsPromised);
+chai.should();
 
 describe('Process Array data with provided mapping', () => {
   it('Should correctly process all the data provided', async () => {
     const xFormTemplate = {
       fieldset: [{ from: 'random', to: 'precise' }]
-    }
+    };
 
     const source = [
       {
@@ -22,7 +22,7 @@ describe('Process Array data with provided mapping', () => {
       {
         random: 'value three'
       }
-    ]
+    ];
 
     const target = [
       {
@@ -34,10 +34,11 @@ describe('Process Array data with provided mapping', () => {
       {
         precise: 'value three'
       }
-    ]
-    await mapToNewObjects(source, xFormTemplate).should.not.be.rejected
-    await mapToNewObjects(source, xFormTemplate).should.eventually.eqls(target)
-  })
+    ];
+
+    await chai.expect(mapToNewObjects(source, xFormTemplate)).to.not.be.rejected;
+    await chai.expect(mapToNewObjects(source, xFormTemplate)).to.eventually.eql(target);
+  });
 
   it('Should fail the whole process with an error if invalid data is provided', async () => {
     const xFormTemplate = {
@@ -52,7 +53,7 @@ describe('Process Array data with provided mapping', () => {
           }
         }
       ]
-    }
+    };
 
     const source = [
       {
@@ -64,15 +65,13 @@ describe('Process Array data with provided mapping', () => {
       {
         dateField: '1999-12'
       }
-    ]
+    ];
 
     const errorMsg =
-      'An error occured during transformation Error: Invalid time value error occured when trying to format 1999-12 with dd/mm/yyyy'
+      'An error occured during transformation Error: Invalid time value error occured when trying to format 1999-12 with dd/mm/yyyy';
 
-    await mapToNewObjects(source, xFormTemplate).should.be.rejectedWith(
-      errorMsg
-    )
-  })
+    await chai.expect(mapToNewObjects(source, xFormTemplate)).to.be.rejectedWith(errorMsg);
+  });
 
   it('Should fail if non-iterable data are passed', async () => {
     const xFormTemplate = {
@@ -87,13 +86,14 @@ describe('Process Array data with provided mapping', () => {
           }
         }
       ]
-    }
+    };
 
     const source = {
       dateField: '1981-10-03'
-    }
-    await mapToNewObjects(source, xFormTemplate).should.be.rejected
-  })
+    };
+
+    await chai.expect(mapToNewObjects(source, xFormTemplate)).to.be.rejected;
+  });
 
   it('Should fail if non-iterable data are passed, even if the flag to continue on errors is set to true', async () => {
     const xFormTemplate = {
@@ -108,13 +108,14 @@ describe('Process Array data with provided mapping', () => {
           }
         }
       ]
-    }
+    };
 
     const source = {
       dateField: '1981-10-03'
-    }
-    await mapToNewObjects(source, xFormTemplate, true).should.be.rejected
-  })
+    };
+
+    await chai.expect(mapToNewObjects(source, xFormTemplate)).to.be.rejected;
+  });
 
   it('Should fail only for the invalid dataset and map all other successfully', async () => {
     const xFormTemplate = {
@@ -129,7 +130,7 @@ describe('Process Array data with provided mapping', () => {
           }
         }
       ]
-    }
+    };
 
     const source = [
       {
@@ -141,7 +142,7 @@ describe('Process Array data with provided mapping', () => {
       {
         dateField: '1991-11-04'
       }
-    ]
+    ];
 
     const target = [
       {
@@ -154,18 +155,16 @@ describe('Process Array data with provided mapping', () => {
       {
         anotherDatefield: '11/04/1991'
       }
-    ]
+    ];
 
-    await mapToNewObjects(source, xFormTemplate, true).should.eventually.eqls(
-      target
-    )
-  })
+    await chai.expect(mapToNewObjects(source, xFormTemplate, true)).to.eventually.eql(target);
+  });
 
   it('should transform the source file via a given template file and the output should match the expected one', async () => {
     const result = await mapArrayWithTemplate(
       `${__dirname}/mocks/array-source.json`,
       `${__dirname}/mocks/array-template.json`
-    )
+    );
 
     const target = [
       {
@@ -177,9 +176,9 @@ describe('Process Array data with provided mapping', () => {
       {
         precise: 'value three'
       }
-    ]
-    chai.expect(result).to.eqls(target)
-  })
+    ];
+    chai.expect(result).to.eqls(target);
+  });
 
   it('should transform the source file via a given template file and continue on an error if the according flag is set', async () => {
     const target = [
@@ -193,33 +192,22 @@ describe('Process Array data with provided mapping', () => {
       {
         anotherDatefield: '11/04/1991'
       }
-    ]
+    ];
 
-    await mapArrayWithTemplate(
+    await chai.expect(mapArrayWithTemplate(
       `${__dirname}/mocks/error-source-array.json`,
       `${__dirname}/mocks/error-template-array.json`,
       true
-    ).should.eventually.eqls(target)
-  })
+    )).to.eventually.eql(target);
+  });
 
   it('should fail with an error when trying to transform invalid data and the according flag is not set', async () => {
-    const target = [
-      {
-        anotherDatefield: '10/03/1981'
-      },
-      {
-        error:
-          'Invalid time value error occured when trying to format 1999-12 with dd/mm/yyyy'
-      },
-      {
-        anotherDatefield: '11/04/1991'
-      }
-    ]
+    const error = 'Invalid time value error occured when trying to format 1999-12 with dd/mm/yyyy';
 
-    await mapArrayWithTemplate(
+    await chai.expect(mapArrayWithTemplate(
       `${__dirname}/mocks/error-source-array.json`,
       `${__dirname}/mocks/error-template-array.json`,
       false
-    ).should.be.rejectedWith(target.error)
-  })
-})
+    )).to.be.rejectedWith(error);
+  });
+});

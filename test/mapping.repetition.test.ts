@@ -1,7 +1,6 @@
-const { expect } = require('chai')
-const { describe, it } = require('mocha')
+import { expect } from 'chai';
 
-const { mapToNewObject } = require('../utils/mapping')
+import { mapToNewObject } from '../utils/mapping';
 
 describe('Testing repetition groups', () => {
   it('should successfully take over properties mapped in a fromEach repetition group to a new object', () => {
@@ -21,7 +20,7 @@ describe('Testing repetition groups', () => {
           }
         }
       ]
-    }
+    };
     const source = {
       repetitionGroup: [
         {
@@ -33,7 +32,7 @@ describe('Testing repetition groups', () => {
           singlePropertyTwo: 'another value to copy!'
         }
       ]
-    }
+    };
     const target = {
       repetitionGroup: [
         {
@@ -43,10 +42,10 @@ describe('Testing repetition groups', () => {
           singlePropertyTwo: 'another value to copy!'
         }
       ]
-    }
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    };
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should successfully take over properties mapped in a fromEach repetition group to a new object with another name', () => {
     const xFormTemplate = {
@@ -64,7 +63,7 @@ describe('Testing repetition groups', () => {
           }
         }
       ]
-    }
+    };
     const source = {
       repetitionGroup: [
         {
@@ -72,17 +71,17 @@ describe('Testing repetition groups', () => {
           singleProperty: 'value to copy!'
         }
       ]
-    }
+    };
     const target = {
       newGroup: [
         {
           newSingleProperty: 'value to copy!'
         }
       ]
-    }
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    };
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should not create empty objects in the result', () => {
     const xFormTemplate = {
@@ -99,7 +98,7 @@ describe('Testing repetition groups', () => {
           }
         }
       ]
-    }
+    };
     const source = {
       food: [
         {
@@ -115,10 +114,10 @@ describe('Testing repetition groups', () => {
           countryOfOrigin: 'Greece'
         }
       ]
-    }
+    };
 
-    const result = mapToNewObject(source, xFormTemplate)
-    expect(result.food.length).to.eq(1)
-    expect(result.food[0]).not.to.be.empty
-  })
-})
+    const result = mapToNewObject(source, xFormTemplate);
+    expect(result.food.length).to.eq(1);
+    expect(result.food[0]).not.to.be.empty;
+  });
+});

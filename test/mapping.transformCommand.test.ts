@@ -1,6 +1,6 @@
-const { expect } = require('chai')
-const { describe, it } = require('mocha')
-const { mapToNewObject } = require('../utils/mapping')
+import { expect } from 'chai';
+
+import { mapToNewObject } from '../utils/mapping';
 
 describe('Transformation via command work as expected', () => {
   it('should transform successfully with the given command', () => {
@@ -19,18 +19,18 @@ describe('Transformation via command work as expected', () => {
           }
         }
       ]
-    }
+    };
 
     const source = {
       key: 'the key'
-    }
+    };
 
     const target = {
       newKey: 'THE KEY'
-    }
+    };
 
-    expect(mapToNewObject(source, xFormTemplate)).to.eqls(target)
-  })
+    expect(mapToNewObject(source, xFormTemplate)).to.eqls(target);
+  });
 
   it('should successfully transform by using a series of commands', () => {
     const xFormTemplate = {
@@ -55,22 +55,22 @@ describe('Transformation via command work as expected', () => {
               {
                 map: true,
                 command: 'substring',
-                params: [2]
+                params: ['2']
               }
             ]
           }
         }
       ]
-    }
+    };
 
     const source = {
       key: 'independent; invaluable; indispensable; inconvenient'
-    }
+    };
 
     const target = {
       key: ['DEPENDENT', 'VALUABLE', 'DISPENSABLE', 'CONVENIENT']
-    }
+    };
 
-    expect(mapToNewObject(source, xFormTemplate)).to.eqls(target)
-  })
-})
+    expect(mapToNewObject(source, xFormTemplate)).to.eqls(target);
+  });
+});

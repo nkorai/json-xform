@@ -1,7 +1,6 @@
-const { expect } = require('chai')
-const { describe, it } = require('mocha')
+import { expect } from 'chai';
 
-const { mapToNewObject } = require('../utils/mapping')
+import { mapToNewObject } from '../utils/mapping';
 
 describe('Special non-word characters in the source object', () => {
   it('should perform the mapping correctly also if property names start with a non-word char', () => {
@@ -15,18 +14,18 @@ describe('Special non-word characters in the source object', () => {
           to: 'myJob'
         }
       ]
-    }
+    };
     const source = {
       name: 'Mark',
       $job: 'programmer'
-    }
+    };
     const target = {
       name: 'Mark',
       myJob: 'programmer'
-    }
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    };
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should perform the mapping correctly also if non-word chars are mixed within the property names', () => {
     const xFormTemplate = {
@@ -39,18 +38,18 @@ describe('Special non-word characters in the source object', () => {
           to: 'myJob'
         }
       ]
-    }
+    };
     const source = {
       _name: 'Mark',
       '$j&ob': 'programmer'
-    }
+    };
     const target = {
       _name: 'Mark',
       myJob: 'programmer'
-    }
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
+    };
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
 
   it('should perform mapping from nested expressions with non-word chars correctly', () => {
     const xFormTemplate = {
@@ -76,7 +75,7 @@ describe('Special non-word characters in the source object', () => {
           to: '$addressTown'
         }
       ]
-    }
+    };
     const source = {
       $data: {
         fullName: 'theName',
@@ -84,7 +83,7 @@ describe('Special non-word characters in the source object', () => {
         $age: { value: 12 },
         town: { $name: 'Berlin' }
       }
-    }
+    };
     const target = {
       name: 'theName',
       occupation: 'dvlpr',
@@ -93,8 +92,8 @@ describe('Special non-word characters in the source object', () => {
         name: 'Berlin'
       },
       $addressTown: 'Berlin'
-    }
-    const newObject = mapToNewObject(source, xFormTemplate)
-    expect(newObject).to.eqls(target)
-  })
-})
+    };
+    const newObject = mapToNewObject(source, xFormTemplate);
+    expect(newObject).to.eqls(target);
+  });
+});

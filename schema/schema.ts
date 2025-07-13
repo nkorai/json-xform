@@ -1,4 +1,4 @@
-const schema = {
+export const schema = {
   type: 'object',
   properties: {
     via: {
@@ -82,6 +82,4 @@ const schema = {
     }
   },
   required: ['fieldset']
-}
-
-module.exports = { schema }
+};

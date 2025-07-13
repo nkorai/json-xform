@@ -1,14 +1,13 @@
-const { expect } = require('chai')
-const { describe, it } = require('mocha')
+import { expect } from 'chai';
 
-const { mapWithTemplate } = require('../utils/mapping')
+import { mapWithTemplate } from '../utils/mapping';
 
 describe('Perform mapping with files for source and mapping template', () => {
   it('should transform the source file via a given template file and the output should match the expected one', () => {
     const result = mapWithTemplate(
       `${__dirname}/mocks/simple-source.json`,
       `${__dirname}/mocks/simple-template.json`
-    )
+    );
 
     const target = {
       name: 'Peter',
@@ -20,7 +19,7 @@ describe('Perform mapping with files for source and mapping template', () => {
         state: 'NY',
         postCode: '123-ABC'
       }
-    }
-    expect(result).to.eqls(target)
-  })
-})
+    };
+    expect(result).to.eqls(target);
+  });
+});
