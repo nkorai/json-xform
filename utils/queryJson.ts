@@ -1,5 +1,5 @@
 
-import jsonpath from 'jsonpath';
+import { JSONPath } from 'jsonpath-plus';
 
 /**
  * This is necessary since {@link jsonpath} seems to only recognize objects that carry __proto__
@@ -11,15 +11,15 @@ const makeObject = (from) => {
 };
 
 export const querySingleProp = (json, prop) => {
-  return jsonpath.query(makeObject(json), constructQueryForProp(prop))[0];
+  return JSONPath({ json: makeObject(json), path: constructQueryForProp(prop) })[0];
 };
 
 export const queryAll = (json, prop) => {
-  return jsonpath.query(makeObject(json), '$..' + prop)[0];
+  return JSONPath({ json: makeObject(json), path: '$..' + prop })[0];
 };
 
 export const queryArrayElements = (json, array, prop) => {
-  return jsonpath.query(makeObject(json), '$.' + array + '..' + prop);
+  return JSONPath({ json: makeObject(json), path: '$.' + array + '..' + prop });
 };
 
 const evaluateProp = (prop) => {
