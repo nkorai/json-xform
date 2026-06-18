@@ -11,7 +11,7 @@ In order to avoid coding each time when a new tool shall be integrated, the user
 JSON report to process.
 
 ## The DSL
-The DSL is implemented in JSON. Its vocabulary is limited to five words.
+The DSL is implemented in JSON. Its vocabulary is limited to a small set of words.
 1. fieldset - defines an array of objects, each object encapsulates 
 2. from - defines the field to get the value from the source JSON.
 3. to - defines the field to write the value to the target JSON.
@@ -19,6 +19,68 @@ The DSL is implemented in JSON. Its vocabulary is limited to five words.
 5. fromEach - defines an object which addresses an array in the source JSON and provides the possibility to pick particular source fields to write to the target JSON by using the fieldset again.
 6. field - defines the field in the fromEach block to get the value from.
 7. flatten - to flatten collections.
+8. **fromArray** - defines an ordered list of source paths whose values are collected into the array at `to`. Counterpart to `from` for list outputs.
+
+## fromArray — assembling a list from multiple sources
+
+`from` reads one source path into a scalar target. `fromArray` reads N source
+paths into a list target, in the order given. Useful whenever the result
+should be a positional array and the source data is scattered across
+distinct fields rather than already laid out as a collection.
+
+```javascript
+const source = {
+  card: { url: 'https://card.jpg' },
+  event: { url: 'https://event.jpg' }
+};
+
+const mapping = {
+  fieldset: [
+    {
+      fromArray: ['card.url', 'event.url'],
+      to: 'imageUrls'
+    }
+  ]
+};
+
+// → { imageUrls: ['https://card.jpg', 'https://event.jpg'] }
+```
+
+### Modifiers
+
+All optional. Defaults are no-op so behaviour matches the rest of the DSL
+out of the box; turn each one on when you need it.
+
+- **`skipEmpty: true`** — drops `undefined`, `null`, and empty-string
+  elements from the result. Preserves `0`, `false`, `[]`, and `{}` so
+  positional booleans and numerics are not lost.
+- **`unique: true`** — deduplicates while preserving first-seen order.
+  String / number / boolean dedup by value; objects dedup by reference
+  (standard JS `Set` semantics).
+- **`flatten: true`** — when an element resolves to an array, splice its
+  values into the output instead of nesting. One level deep, matching
+  the existing `fromEach.flatten` behaviour.
+- **`via: { ... }`** — applied per element rather than to the array as a
+  whole, so date / commands transforms work the way you'd expect when
+  the source values are individually formatted (e.g. a list of dates).
+
+The four modifiers compose in a fixed order: `via` runs first, then
+`flatten`, then `skipEmpty`, then `unique`. That order keeps the
+intuitive semantics — format each value, splice array results, drop the
+emptiness that the formatting may have produced, finally dedup.
+
+### When fromArray is required vs. recommended
+
+`fromArray` always needs an explicit `to`. There is no implicit
+derivation rule for it the way single-path `from` derives the target
+from the source path when `to` is omitted.
+
+If `toArray: true` appears on the same entry it is ignored — the output
+is already an array, so wrapping would just nest the result.
+
+If two fieldset entries write to the same `to`, the first one wins
+(this is the existing `addPropToTarget` behaviour, not a fromArray
+special case). Use distinct `to` paths if you need both to land.
 
 ## Dependencies
 The essential libraries used by this project are [jsonpath](https://www.npmjs.com/package/jsonpath) and [jsonschema](https://www.npmjs.com/package/jsonschema)

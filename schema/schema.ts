@@ -49,6 +49,17 @@ export const schema = {
           withValueFrom: { type: 'string' },
           withTemplate: { type: 'string' },
           toArray: { type: 'boolean' },
+          // fromArray: multi-source array builder. Mirrors `from` for the
+          // case where the target should be a list assembled from several
+          // distinct source paths. Output order matches the order of paths.
+          fromArray: {
+            type: 'array',
+            items: { type: 'string' }
+          },
+          // Optional modifiers paired with `fromArray`. Documented in README.
+          skipEmpty: { type: 'boolean' },
+          unique: { type: 'boolean' },
+          flatten: { type: 'boolean' },
           via: { $ref: '/Via' },
           fromEach: {
             type: 'object',
@@ -76,7 +87,10 @@ export const schema = {
             ],
             oneOf: [{ required: ['from'] }, { required: ['withTemplate'] }]
           },
-          { required: ['fromEach'] }
+          { required: ['fromEach'] },
+          // fromArray entries always need an explicit `to` — there is no
+          // implicit derivation rule like there is for single-path `from`.
+          { required: ['fromArray', 'to'] }
         ]
       }
     }

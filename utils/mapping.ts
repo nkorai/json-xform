@@ -204,6 +204,62 @@ const traverseFieldsets = (sources, parentTemplate, flatten) => {
   return fieldsetTarget;
 };
 
+/**
+ * `fromArray` collects values from N source paths into a single list at `to`.
+ * Counterpart to the single-source `from` for cases where the target should
+ * be an assembled list rather than a scalar.
+ *
+ * Optional modifiers (all default off so behaviour is uniform with the rest
+ * of the DSL — opt in to filtering / dedup / splicing):
+ *   - `via`: applied per-element rather than to the whole array
+ *   - `flatten`: splice array-valued elements into the result instead of
+ *     nesting them (one level deep, matching `fromEach`'s `flatten`)
+ *   - `skipEmpty`: drop undefined / null / empty-string elements. Falsy
+ *     primitives like `0` and `false` are preserved so callers can collect
+ *     them positionally without surprises
+ *   - `unique`: dedupe while preserving first-seen order
+ *
+ * If `toArray: true` is also set on the same entry it's a no-op — the
+ * output is already an array. The schema doesn't reject the combination
+ * because that would diverge from the rest of the DSL's loose constraints.
+ */
+const buildFromArray = (source, item) => {
+  let elements: any[] = item.fromArray.map((path: string) =>
+    querySingleProp(source, path)
+  );
+
+  if (item.via) {
+    // `via.commands` uses Array.shift() under the hood, which drains the
+    // transform array after the first use. Deep-clone `via` per element so
+    // each formatter call sees a fresh sequence — without this, fromArray
+    // produces the right value at index 0 and crashes at index 1.
+    elements = elements.map((v) =>
+      formatPropValueIfNecessary(v, JSON.parse(JSON.stringify(item.via)))
+    );
+  }
+
+  if (item.flatten) {
+    elements = elements.flatMap((v) => (Array.isArray(v) ? v : [v]));
+  }
+
+  if (item.skipEmpty) {
+    elements = elements.filter(
+      (v) => v !== undefined && v !== null && v !== ''
+    );
+  }
+
+  if (item.unique) {
+    const seen = new Set();
+    elements = elements.filter((v) => {
+      if (seen.has(v)) return false;
+      seen.add(v);
+      return true;
+    });
+  }
+
+  return elements;
+};
+
 const traverseFieldset = (source, fieldsetTemplate, target) => {
   fieldsetTemplate.forEach((item) => {
     if (item.fromEach) {
@@ -211,6 +267,15 @@ const traverseFieldset = (source, fieldsetTemplate, target) => {
         ...target,
         ...traverseFromEach(source, item[commands.FROMEACH], target)
       };
+    }
+
+    if (item.fromArray) {
+      const elements = buildFromArray(source, item);
+      // via was already applied per-element above; addPropToTarget should
+      // not re-apply it. toArray would just nest the array unhelpfully so
+      // it's ignored.
+      const currentTarget = addPropToTarget(target, item.to, elements);
+      target = { ...target, ...currentTarget };
     }
 
     if (item.from) {
